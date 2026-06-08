@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { API_BASE } from "../api";
 
 const AdminAuthContext = createContext(null);
 
@@ -17,9 +18,7 @@ export function AdminAuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      // Use Vite proxy path (/api/...) instead of a hardcoded port.
-      // This keeps the port config in one place (vite.config.js).
-      const res = await fetch("/api/Auth/login", {
+      const res = await fetch(`${API_BASE}/api/Auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

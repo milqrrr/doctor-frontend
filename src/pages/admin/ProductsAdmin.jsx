@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getProducts, getProductCategories } from "../../api";
+import { getProducts, getProductCategories, API_BASE } from "../../api";
 import { useAdminAuth } from "../../context/AdminAuthContext";
 import { getProductName } from "../../utils/productImage";
 import Spinner from "../../components/ui/Spinner";
@@ -56,7 +56,7 @@ export default function ProductsAdmin() {
       const authHeader = token ? { "Authorization": `Bearer ${token}` } : {};
 
       if (modal.mode === "add") {
-        const res = await fetch("http://localhost:8080/api/products", {
+        const res = await fetch(`${API_BASE}/api/products`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...authHeader },
           body: JSON.stringify(payload),
@@ -66,7 +66,7 @@ export default function ProductsAdmin() {
           setProducts(p => [created, ...p]);
         }
       } else {
-        const res = await fetch(`http://localhost:8080/api/products/${modal.id}`, {
+        const res = await fetch(`${API_BASE}/api/products/${modal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...authHeader },
           body: JSON.stringify(payload),
@@ -87,7 +87,7 @@ export default function ProductsAdmin() {
   const handleDelete = async (id) => {
     try {
       const token = getToken();
-      await fetch(`http://localhost:8080/api/products/${id}`, {
+      await fetch(`${API_BASE}/api/products/${id}`, {
         method: "DELETE",
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
       });

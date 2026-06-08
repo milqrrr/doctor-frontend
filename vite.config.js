@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // local backend port (launchSettings.json → http profile)
+        target: process.env.VITE_API_URL || 'https://doctorapi-72du.onrender.com',
         changeOrigin: true,
       },
     },

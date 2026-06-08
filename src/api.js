@@ -1,6 +1,6 @@
-// Empty BASE_URL — all /api requests go through the Vite proxy (vite.config.js).
-// Proxy target: http://localhost:5018 (local dev). For Docker: change target to http://localhost:8080.
-const BASE_URL = "";
+// API_BASE: reads VITE_API_URL from .env / Vercel env vars.
+// Fallback ensures requests reach the backend even if the env var is missing.
+export const API_BASE = import.meta.env.VITE_API_URL || "https://doctorapi-72du.onrender.com";
 
 // ── Admin auth headers (for admin panel endpoints) ──────
 function authHeaders() {
@@ -18,7 +18,7 @@ export function userAuthHeaders() {
 // otherwise ...options would overwrite the merged headers object.
 async function request(endpoint, options = {}) {
   const { headers: extraHeaders, ...rest } = options;
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     headers: { "Content-Type": "application/json", ...authHeaders(), ...extraHeaders },
     ...rest,
   });
@@ -86,7 +86,7 @@ export const updateOrderStatus = (id, status) =>
 
 // ── Orders (user) ────────────────────────────────────────
 export async function createOrder(data) {
-  const res = await fetch(`${BASE_URL}/api/orders`, {
+  const res = await fetch(`${API_BASE}/api/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -122,7 +122,7 @@ export const getSiteContacts = () => request("/api/site-contacts");
 // Body (LoginUserDto):     { Email, Password }
 // Response (UserAuthResponseDto): { token, userId, fullName, email, role }
 export async function loginUser(email, password) {
-  const res = await fetch(`${BASE_URL}/api/Users/login`, {
+  const res = await fetch(`${API_BASE}/api/Users/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -141,7 +141,7 @@ export async function loginUser(email, password) {
 // Body (RegisterUserDto):  { FullName, Email, Password }
 // Response (UserAuthResponseDto): { token, userId, fullName, email, role }
 export async function registerUser(data) {
-  const res = await fetch(`${BASE_URL}/api/Users/register`, {
+  const res = await fetch(`${API_BASE}/api/Users/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -163,7 +163,7 @@ export async function registerUser(data) {
 // GET /api/Users/me  (requires user_token Bearer header)
 // Response: { id, fullName, email, role, createdAt }
 export async function getCurrentUser() {
-  const res = await fetch(`${BASE_URL}/api/Users/me`, {
+  const res = await fetch(`${API_BASE}/api/Users/me`, {
     method: "GET",
     headers: {
       "Accept": "application/json",
@@ -278,7 +278,7 @@ export const getAdminUserRecommendations = (userId) =>
 
 async function adminFetch(path, options = {}) {
   const token = localStorage.getItem("admin_token");
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -327,7 +327,7 @@ async function diaryFetch(path, options = {}) {
   if (!token) {
     console.warn("diaryFetch: user_token is missing — request will be rejected by the server");
   }
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
